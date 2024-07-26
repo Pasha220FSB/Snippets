@@ -11,7 +11,7 @@ LANGS = (
 
 class Snippet(models.Model):
     name = models.CharField(max_length=100)
-    lang = models.CharField(max_length=30, choices=LANGS)
+    lang = models.CharField(max_length=30, choices=LANGS, verbose_name="Язык")
     code = models.TextField(max_length=5000)
     creation_date = models.DateTimeField(auto_now=True)
 
@@ -19,4 +19,11 @@ class Snippet(models.Model):
                              blank=True,
                              null=True,
                              on_delete=models.CASCADE)
-    public = models.BooleanField(default=True)
+    public = models.BooleanField(default=True) # True = public, False = private
+
+    def __repr__(self) -> str:
+        return f"snippet({self.name},{self.lang})"
+    
+    def __str__(self):
+        return self.name
+    

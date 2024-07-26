@@ -1,6 +1,6 @@
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
-from MainApp.forms import SnippetForm
+from MainApp.forms import SnippetForm, UserRegistrationForm
 from MainApp.models import Snippet
 from django.contrib import auth
 from django.shortcuts import redirect
@@ -24,10 +24,16 @@ def login_page(request):
             password=password)
         if user is not None:
             auth.login(request, user)
-            print('here')
+            
+
         else:
             # Return error message
-            pass
+            context = {
+                "pagename": "PythonBin",
+                "errors": ['wrong username or password'],
+
+            }
+            return render(request, "pages/index.html", context)
     return redirect('home')
 
 
@@ -95,14 +101,16 @@ def snippet_detail(request, snippet_id):
 #             return redirect("snippets-list")
 #         return render(request,'pages/add_snippet.html', {'form': form})
 
+@login_required
 def delete_snippet(request,snippet_id):
-    snippet = get_object_or_404(Snippet, id=snippet_id)
+    snippet = get_object_or_404(Snippet, id=snippet_id, user=request.user)
     snippet.delete()
     return redirect('snippets-list')
 
 
+@login_required
 def update_snippet(request, snippet_id):
-    snippet = get_object_or_404(Snippet, id=snippet_id)
+    snippet = get_object_or_404(Snippet, id=snippet_id, user=request.user)
 
     if request.method == "GET":
         form = SnippetForm(instance=snippet)
@@ -114,3 +122,20 @@ def update_snippet(request, snippet_id):
         if form.is_valid():
             form.save()
             return redirect('snippets-list')
+        
+def creat_user(request):
+    context = {"pagename":"Регистрация нового пользователя"}
+    if request.method == "GET":
+        form = UserRegistrationForm()
+        context["form"] = form
+        return render(request, "pages/register.html", context)
+    
+    if request.method == "POST":
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            auth.login(request, user)
+            return redirect("home")
+    
+    context["form"] = form
+    return render(request, "pages/register.html",context)
