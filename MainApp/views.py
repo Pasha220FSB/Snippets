@@ -13,6 +13,8 @@ def index_page(request):
 
 
 def login_page(request):
+    from pprint import pprint
+    print(vars(request))
     
     if request.method == 'POST':
         username = request.POST.get("username")

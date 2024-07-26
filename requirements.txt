@@ -1,2 +1,2 @@
-Django
-django-extensions
+Django==5.0.7
+django-extensions==3.2.3
