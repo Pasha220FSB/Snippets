@@ -2,7 +2,7 @@
 <header>
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="/">
+            <a class="navbar-brand" href="{% url 'home' %}">
                 <img src="{% static 'images/logo.png' %}" width="32" height="32" alt="">
                 PythonBin
             </a>
@@ -13,16 +13,36 @@
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <ul class="navbar-nav mr-auto">
                     <li class="form-inline">
-                        <a class="btn btn-outline-secondary" href="">
+                        <a class="btn btn-outline-secondary" href="{% url 'snippets-add' %}">
                             Добавить сниппет
                         </a>
                     </li>
                     <li class="form-inline">
-                        <a class="btn btn-outline-info" href="">
+                        <a class="btn btn-outline-info" href="{% url 'snippets-list' %}">
                             Посмотреть сниппеты
                         </a>
                     </li>
+                    {% if request.user.is_authenticated %}
+                    <li class="form-inline">
+                        <a href="{% url 'my-snippets-list' %}">Мои сниппеты</a>
+                    </li>
+                    {% endif %}
+
                 </ul>
+            </div>
+            <div class="px-1"style="background-color: white;">
+                {% if request.user.is_authenticated %}
+                    <span>Welcome, {{request.user.username}}</span>
+                    <span><a href="{% url 'logout' %}">logout</a></span>
+                {% else %}
+                <form method="post" action="{% url 'login' %}">{% csrf_token %}
+                    <input name="username" type="text" placeholder="username">
+                    <input name="password" type="password" placeholder="password">
+                    <button type="submit">login</button>
+                </form>
+                
+                {% endif %}
+                
             </div>
         </div>
     </nav>
